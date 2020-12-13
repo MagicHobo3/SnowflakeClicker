@@ -24,7 +24,8 @@ class Input(object):
                 self.gui.mx = MX
                 self.gui.my = MY
 
-            if event.type == pygame.MOUSEBUTTONDOWN:
+            # Checking for mouse button click. (True, False, False) is for left click.
+            if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed() == (True,False,False):
                 MX, MY = pygame.mouse.get_pos()
                 self.gui.mouseDown = True
 
@@ -42,6 +43,18 @@ class Input(object):
                         back.clicked()
                     self.logic.snowButtonClicked()
 
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_s:
+                    if self.gui.sfSpeed < self.gui.sfMaxSpeed:
+                        self.gui.sfSpeed += self.gui.sfAccel
+                    if self.gui.sfOuterCircleSpeed < self.gui.sfOuterCircleMaxSpeed:
+                        self.gui.sfOuterCircleSpeed += self.gui.sfOuterCircleAccel
+                    if self.gui.sfInnerCircleSpeed < self.gui.sfInnerCircleMaxSpeed:
+                        self.gui.sfInnerCircleSpeed += self.gui.sfInnerCircleAccel
+                    self.gui.newFlake()
+                    for back in self.gui.snowBackCircle:
+                        back.clicked()
+                    self.logic.snowButtonClicked()
 
             if event.type == pygame.MOUSEBUTTONUP:
                 MX, MY = pygame.mouse.get_pos()
