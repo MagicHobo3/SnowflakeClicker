@@ -11,7 +11,8 @@ ___________________________________________________________________
 import pygame
 from datetime import datetime
 import time
-from threading import Timer
+import os
+import pickle
 from gui import GUI
 from input import Input
 from logic import Logic
@@ -20,7 +21,31 @@ def main():
     "Window"
     width = 1200
     height = 800
-    logic = Logic()
+
+
+    # This is what I orinally had. But I needed to use Try/Except somewhere.
+    """
+    if os.path.exists("savedata.txt"):
+        load = open('savedata.txt', 'rb')
+        logic = pickle.load(load)
+        load.close()
+        print("Loaded Saved Game")
+    else:
+        logic = Logic()
+        print("New Game")
+    """
+
+    # If saved data exists, load that data as the Logic Class
+    try:
+        load = open('savedata.txt', 'rb')
+        logic = pickle.load(load)
+        load.close()
+        print("Loaded Saved Game : " + str(logic.lastSave))
+    # Else pull in a fresh Logic Class
+    except:
+        logic = Logic()
+        print("New Game")
+
     gui = GUI(width, height, logic)
     input = Input(gui, logic)
 
@@ -35,20 +60,22 @@ def main():
 
     pygame.mixer.music.stop()
 
-
 def loop(width, height, gui, logic, input):
 
     play = True
     currentFrame = 0
     maxFrames = 60
     newSecond = None
+    newMinute = None
 
     while(play):
-        start = time.time()
-        currentSecond = datetime.now()
-        if currentSecond.strftime("%S") != newSecond:
-            newSecond = currentSecond.strftime("%S")
+        currentTime = datetime.now()
+        if currentTime.strftime("%S") != newSecond:
+            newSecond = currentTime.strftime("%S")
             logic.update()
+        if currentTime.strftime("%M") != newMinute:
+            newMinute = currentTime.strftime("%M")
+            gui.pickle()
 
         events = pygame.event.get()
         input.checkQuit(events)
